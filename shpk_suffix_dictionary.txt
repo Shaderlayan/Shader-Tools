@@ -1,0 +1,12 @@
+Alpha
+Body
+BodyJJM
+Color
+Compatibility
+Face
+Hair
+Mask
+Off
+ReflectivityRGB
+RGBA
+Simple

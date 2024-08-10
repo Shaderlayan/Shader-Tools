@@ -1,0 +1,6 @@
+__pycache__/
+*.shpk
+*.dxbc
+*.pmp
+*.tar
+*.tar.*
