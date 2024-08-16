@@ -656,8 +656,7 @@ class ShPk(HasResources):
         mat_params = []
         for _ in range(file_header.mat_param_count):
             mat_params.append(MatParam.read(reader))
-        mat_param_defaults_tup = reader.read_float(file_header.mat_params_size >> 2) if file_header.has_mat_param_defaults != 0 else None
-        mat_param_defaults = list(mat_param_defaults_tup)
+        mat_param_defaults = list(reader.read_float(file_header.mat_params_size >> 2) if file_header.has_mat_param_defaults != 0 else None)
         constants = []
         for _ in range(file_header.constant_count):
             constants.append(Resource.read(reader, strings))
