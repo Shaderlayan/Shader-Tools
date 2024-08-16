@@ -656,7 +656,8 @@ class ShPk(HasResources):
         mat_params = []
         for _ in range(file_header.mat_param_count):
             mat_params.append(MatParam.read(reader))
-        mat_param_defaults = reader.read_float(file_header.mat_params_size >> 2) if file_header.has_mat_param_defaults != 0 else None
+        mat_param_defaults_tup = reader.read_float(file_header.mat_params_size >> 2) if file_header.has_mat_param_defaults != 0 else None
+        mat_param_defaults = list(mat_param_defaults_tup)
         constants = []
         for _ in range(file_header.constant_count):
             constants.append(Resource.read(reader, strings))
@@ -817,7 +818,7 @@ class ShPk(HasResources):
             if len_delta > 0:
                 self.mat_param_defaults = self.mat_param_defaults[:defaults_len]
             elif len_delta < 0:
-                self.mat_param_defaults.extend([0.0 for _ in range(-len_delta)])
+                self.mat_param_defaults.extend(0.0 for _ in range(-len_delta))
 
     def unsafe_write_header(self, writer: BinaryReader) -> None:
         self.file_header.write(writer)
