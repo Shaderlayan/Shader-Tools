@@ -195,7 +195,6 @@ match verb:
                     matparam = parse_mat_param(new_shader_path)
                     shader_pack.mat_params.append(matparam)
                     if not matparam.__dict__["defaultvalue"] == 0.0:
-                        shader_pack.mat_params.append(matparam)
                         mpspl = matparam.__dict__["defaultvalue"].split(",")
                         if len(mpspl) * 4 == matparam.__dict__["size"]:
                             for i, num in enumerate(mpspl):
