@@ -21,7 +21,7 @@ def usage() -> NoReturn:
     print('    Updates the given ShPk, replacing the specified shaders by the given files')
     print('    Adding new shaders is also supported by specifying vsNEW/ORIG or psNEW/ORIG')
     print('    Some special values are accepted instead of shader IDs and file names:')
-    print('      mp+ name:start:size')
+    print('      mp+ name:start:size[:defaultvalue]')
     print('      mk+ name:defaultvalue:value1,vsNEW/ORIG,...,psNEW/ORIG,...:value2,...:...')
     print('      ct= name:type')
     print('      st= name:type')
@@ -59,11 +59,16 @@ def crc32(name: str, prefixed_calc = None) -> int:
 def parse_mat_param(param: str) -> shpkstruct.MatParam:
     tokens = param.split(':')
     id = crc32(tokens[0])
-    return shpkstruct.MatParam({
+    newparam = shpkstruct.MatParam({
         'id': id,
         'offset': (int(tokens[1][:-1]) * 4 + 'xyzw'.index(tokens[1][-1])) * 4,
         'size': int(tokens[2]) * 4,
     })
+    if len(tokens) >= 4:
+        newparam.__dict__['defaultvalue'] = tokens[3]
+    else:
+        newparam.__dict__['defaultvalue'] = 0.0
+    return newparam
 
 def parse_mat_key(param: str) -> tuple[int, int, dict]:
     tokens = param.split(':')
@@ -187,7 +192,16 @@ match verb:
                 case 'without':
                     with_flags.remove(new_shader_path)
                 case 'mp+':
-                    shader_pack.mat_params.append(parse_mat_param(new_shader_path))
+                    matparam = parse_mat_param(new_shader_path)
+                    shader_pack.mat_params.append(matparam)
+                    if not matparam.__dict__["defaultvalue"] == 0.0:
+                        shader_pack.mat_params.append(matparam)
+                        mpspl = matparam.__dict__["defaultvalue"].split(",")
+                        if len(mpspl) * 4 == matparam.__dict__["size"]:
+                            for i, num in enumerate(mpspl):
+                                shader_pack.extra_defaults[int(matparam.__dict__["offset"] / 4 + i)] = float(num)
+                        else:
+                            print("WARNING:" + new_shader_path + " has wrong default parameters! They are defaulted to 0...")
                     update_global_resources = True
                 case 'mk+':
                     shader_pack.add_mat_key(*parse_mat_key(new_shader_path))

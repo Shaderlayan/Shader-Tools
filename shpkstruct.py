@@ -604,6 +604,7 @@ class ShPk(HasResources):
         self.pixel_shaders = pixel_shaders
         self.mat_params = mat_params
         self.mat_param_defaults = mat_param_defaults
+        self.extra_defaults = {}
         self.constants = constants
         self.samplers = samplers
         self.textures = textures
@@ -818,6 +819,8 @@ class ShPk(HasResources):
                 self.mat_param_defaults = self.mat_param_defaults[:defaults_len]
             elif len_delta < 0:
                 self.mat_param_defaults.extend(0.0 for _ in range(-len_delta))
+            for index, value in self.extra_defaults.items():
+                self.mat_param_defaults[index] = value
 
     def unsafe_write_header(self, writer: BinaryReader) -> None:
         self.file_header.write(writer)
